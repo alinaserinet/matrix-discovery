@@ -7,6 +7,8 @@ def reduce_column(matrix: np.ndarray, col_index: int) -> None:
         raise Exception(f"col_index must be between {0} and {cols_count - 1}")
     for i in range(col_index + 1, rows_count):
         change_coff = matrix[i, col_index] / matrix[col_index, col_index]
+        if change_coff == 0:
+            continue
         base_modified = change_coff * matrix[col_index, col_index:]
         matrix[i, col_index:] -= base_modified
-        matrix[i, col_index] = -change_coff
+        matrix[i, col_index] = change_coff
