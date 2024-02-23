@@ -6,7 +6,7 @@ def __lu_decomposition_without_pivoting(matrix: np.ndarray) -> np.ndarray:
     _, cols_count = matrix.shape
     for base_index in range(cols_count - 1):
         if matrix[base_index, base_index] == 0:
-            raise Exception(f'The diagonal element [{base_index}, {base_index}] is Zero')
+            raise Exception(f'the diagonal element [{base_index}, {base_index}] is Zero')
         column_reduction(matrix, base_index)
     return np.identity(cols_count, dtype=np.int8)
 
@@ -18,7 +18,7 @@ def __lu_decomposition_essential_pivoting(matrix: np.ndarray) -> np.ndarray:
         if matrix[base_index, base_index] == 0:
             nonzero_index = find_nonzero_index(matrix, base_index)
             if nonzero_index == -1:
-                raise Exception(f'The matrix is not full rank, there is no nonzero for [{base_index},{base_index}]')
+                raise Exception(f'the matrix is not full rank, there is no nonzero for [{base_index},{base_index}]')
             swap_rows(matrix, pivots, nonzero_index, base_index)
         column_reduction(matrix, base_index)
     return pivots
