@@ -2,7 +2,7 @@ import numpy as np
 from modules import lu_decomposition
 from utils.echelon_tools import get_lower_triangular, get_upper_triangular
 
-matrix = np.random.rand(100, 100) * 10 + 2
+matrix = np.random.rand(5, 5) * 10 + 2
 decompose_matrix_2, pivots_2 = lu_decomposition(matrix, 2)
 low_2 = get_lower_triangular(decompose_matrix_2)
 up_2 = get_upper_triangular(decompose_matrix_2)

@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 
@@ -11,6 +13,9 @@ def column_reduction(matrix: np.ndarray, col_index: int, save_coff=True) -> None
             continue
         base_modified = change_coff * matrix[col_index, col_index:]
         matrix[i, col_index:] -= base_modified
+        if matrix[i, col_index] != 0:
+            warn_message = f'The value has not changed to zero, [{i},{col_index}] is {matrix[i, col_index]}'
+            warnings.warn(warn_message)
         if save_coff:
             matrix[i, col_index] = change_coff
 
