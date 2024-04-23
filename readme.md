@@ -17,7 +17,6 @@ Matrix Discovery is a project focused on exploring Matrix Decompositions, Linear
 ### Prerequisites
 
 -   [Python](https://www.python.org/)
--   [NumPy](https://numpy.org/) (install via `pip install numpy`)
 
 ### Installation
 
@@ -32,8 +31,30 @@ Matrix Discovery is a project focused on exploring Matrix Decompositions, Linear
     ```bash
     cd matrix-discovery
     ```
+   
+3. Python virtual environment (Optional)
 
-3. Install dependencies:
+   - Create a Python virtual environment:
+   ```bash
+    python -m venv venv
+    ```
+   
+   - Activate the venv:
+   ```bash
+    source venv/bin/activate
+    ```
+   
+   - Deactivate the venv:
+   ```bash
+    deactivate
+    ```
+   
+   - Remove the venv:
+   ```bash
+    rm -rf venv
+    ```
+   
+4. Install dependencies:
     ```bash
     pip install -r requirements.txt
     ```
