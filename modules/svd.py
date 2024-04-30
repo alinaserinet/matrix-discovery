@@ -1,12 +1,16 @@
 import numpy as np
 
 
-def __generate_sigma_matrix(singular_values: np.ndarray):
+def __generate_sigma_matrix(singular_values: np.ndarray, shape: tuple[int, int]):
     if singular_values.ndim != 1:
         raise Exception('singular values must be an one dimensional array')
-    singular_values_count = np.shape(singular_values)[0]
-    base_sigma_matrix = np.zeros((singular_values_count, singular_values_count), dtype=np.float64)
-    np.fill_diagonal(base_sigma_matrix, singular_values)
+    base_sigma_matrix = np.zeros(shape, dtype=np.float64)
+    fill_row = 0
+    for i in range(len(singular_values)):
+        if singular_values[i] == 0:
+            continue
+        base_sigma_matrix[fill_row, i] = singular_values[i]
+        fill_row += 1
     return base_sigma_matrix
 
 
@@ -35,5 +39,8 @@ def svd(matrix: np.ndarray):
     non_zero_singular_values = singular_values[singular_values != 0]
     right_singular_matrix = __generate_right_singular_matrix(normal_eigen_vectors)
     left_singular_matrix = __generate_left_singular_matrix(matrix, normal_eigen_vectors, non_zero_singular_values)
-    singular_values_matrix = __generate_sigma_matrix(non_zero_singular_values)
+    singular_values_matrix = __generate_sigma_matrix(
+        singular_values,
+        shape=(matrix.shape[0], np.shape(singular_values)[0])
+    )
     return left_singular_matrix, singular_values_matrix, right_singular_matrix
