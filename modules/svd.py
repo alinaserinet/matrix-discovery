@@ -1,46 +1,50 @@
 import numpy as np
 
 
-def __generate_sigma_matrix(singular_values: np.ndarray, shape: tuple[int, int]):
-    if singular_values.ndim != 1:
-        raise Exception('singular values must be an one dimensional array')
-    base_sigma_matrix = np.zeros(shape, dtype=np.float64)
-    fill_row = 0
-    for i in range(len(singular_values)):
-        if singular_values[i] == 0:
-            continue
-        base_sigma_matrix[fill_row, i] = singular_values[i]
-        fill_row += 1
-    return base_sigma_matrix
+class __SVD:
+    def __init__(self, matrix: np.ndarray):
+        self.matrix = matrix
 
+    # SVD using A.T @ A matrix
+    def ata(self):
+        symmetric_matrix = self.matrix.T @ self.matrix
 
-def __generate_left_singular_matrix(matrix: np.ndarray, normal_vectors: np.ndarray, singular_values: np.ndarray):
-    if singular_values.ndim != 1:
-        raise Exception('singular values must be an one dimensional array')
-    singular_values_count = np.shape(singular_values)[0]
-    vector_rows, vector_cols = np.shape(normal_vectors)
-    matrix_rows = np.shape(matrix)[0]
-    if singular_values_count > vector_cols:
-        raise Exception('singular values are more than vectors')
-    result_matrix = np.zeros((matrix_rows, singular_values_count), dtype=np.float64)
-    for i in range(singular_values_count):
-        result_matrix[:, i] = 1 / singular_values[i] * (matrix @ normal_vectors[:, i])
-    return result_matrix
+        # Calculate eigen values and eigen vectors of symmetric matrix
+        eigen_values, eigen_vectors = np.linalg.eigh(symmetric_matrix)
 
+        # Calculate singular value form symmetric eigen values
+        singular_values = np.sqrt(np.round(eigen_values, decimals=14))
 
-def __generate_right_singular_matrix(normal_vectors: np.ndarray):
-    return normal_vectors
+        # Find descending sorted indexes of singular values
+        singular_values_dsc_index = np.argsort(singular_values)[::-1]
+
+        # Descending sorted of singular values
+        sorted_dsc_singular_values = singular_values[singular_values_dsc_index]
+
+        # Separate non zero singular values
+        non_zeros_singular_values = sorted_dsc_singular_values[np.nonzero(sorted_dsc_singular_values)]
+
+        # Calculate right singular vectors (V)
+        right_singular_matrix = np.round(eigen_vectors, decimals=14)[:, singular_values_dsc_index]
+
+        # Calculate left singular vectors (U)
+        non_zeros_singular_values_count = np.shape(non_zeros_singular_values)[0]
+        left_singular_shape = (non_zeros_singular_values_count, non_zeros_singular_values_count)
+        left_singular_matrix = np.zeros(left_singular_shape, dtype=np.float64)
+        for i in range(non_zeros_singular_values_count):
+            left_singular_matrix[:, i] = 1 / non_zeros_singular_values[i] * self.matrix @ right_singular_matrix[:, i]
+
+        # Calculate sigma matrix
+        sigma = np.zeros((left_singular_matrix.shape[1], right_singular_matrix.shape[0]))
+        np.fill_diagonal(sigma, non_zeros_singular_values)
+
+        return left_singular_matrix, sigma, right_singular_matrix.T
+
+    # SVD using A @ A.T matrix
+    def aat(self):
+        return self.matrix
 
 
 def svd(matrix: np.ndarray):
-    singular_matrix = matrix.transpose() @ matrix
-    eigen_values, normal_eigen_vectors = np.linalg.eigh(singular_matrix)
-    singular_values = np.sqrt(np.round(np.abs(eigen_values), 15))
-    non_zero_singular_values = singular_values[singular_values != 0]
-    right_singular_matrix = __generate_right_singular_matrix(normal_eigen_vectors)
-    left_singular_matrix = __generate_left_singular_matrix(matrix, normal_eigen_vectors, non_zero_singular_values)
-    singular_values_matrix = __generate_sigma_matrix(
-        singular_values,
-        shape=(matrix.shape[0], np.shape(singular_values)[0])
-    )
-    return left_singular_matrix, singular_values_matrix, right_singular_matrix
+    __svd = __SVD(matrix)
+    return __svd.ata()
